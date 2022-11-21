@@ -1,6 +1,15 @@
 [book]
-authors = ["Henri Lunnikivi"]
-language = "en"
-multilingual = false
+title = "Alien Shooter with Rust"
+authors = [
+    "Henri Lunnikivi",
+    "Roni Hämäläinen",
+]
+description = "This book guides the implementation of Alien Shooter on PYNQ-Z1 board."
 src = "src"
+language = "en"
 
+[rust]
+edition = "2021"
+
+[build]
+build-dir = "book"

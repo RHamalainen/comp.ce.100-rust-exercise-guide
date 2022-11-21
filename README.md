@@ -1,10 +1,36 @@
-# Rust Exercise Guide
-This is an auxiliary book provided as support material with the Rust exercise on COMP.CE.100. I.e. "How to create, build and run a demo program on PYNQ-Z1 using the command line and Xilinx tools".
+# Alien shooter Rust exercise guide
 
-## Setup & Reading
-To view the contents of the book, you can either read the sources by clicking on the "src/" directory above, or you can read the rendered version on your browser using `mdbook`. `mdbook` can be set up as follows:
+This is an auxiliary book provided as support material for the alien shooter Rust exercise on `COMP.CE.100`.
+This book instructs how to create, build and run a demo program on PYNQ-Z1 using command line and Xilinx tools.
 
-1. Install [the Rust toolchain](https://rustup.rs/) unless already installed.
-2. Install mdbook: run `cargo install mdbook` on a command line.
-3. Serve the book at localhost: run `mdbook serve` in this directory.
-4. Navigate to "http://localhost:3000/" on your browser.
+## Setup & reading
+
+You can read this book by either:
+
+1. reading the contents inside the `src/`-folder, or
+2. in your browser by using `mdbook`.
+
+Option 2 is recommended.
+
+## How to use `mdbook`
+
+1. Install [Rust toolchain](https://rustup.rs/).
+2. Install `mdbook`.
+    - Run `cargo install mdbook` on a command line.
+3. Serve the book at `localhost`.
+    - Run `mdbook serve` in this directory on command line.
+4. Navigate to http://localhost:3000/ on your browser.
+
+## Studying resources
+
+- [The Rust Programming Language](https://doc.rust-lang.org/stable/book/)
+- [The Embedded Rust Book](https://docs.rust-embedded.org/book/index.html)
+- [The Cargo Book](https://doc.rust-lang.org/cargo/index.html)
+- [The Rustonomicon](https://doc.rust-lang.org/stable/nomicon/)
+- [Online Rust Compiler](https://play.rust-lang.org/)
+- [Rust Language Cheat Sheet](https://cheats.rs/)
+- [Rust Syntax Explainer](https://jrvidal.github.io/explaine.rs/)
+- [Rust Learning Article Collection](https://github.com/ctjhoa/rust-learning)
+- [The Embedonomicon](https://docs.rust-embedded.org/embedonomicon/)
+- [Awesome Embedded Rust](https://github.com/rust-embedded/awesome-embedded-rust)
+- [Rust Iterator Cheat Sheet](https://danielkeep.github.io/itercheat_baked.html)

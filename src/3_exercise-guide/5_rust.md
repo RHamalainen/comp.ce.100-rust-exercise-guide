@@ -1,20 +1,22 @@
-# Rust things of note
+## Other things
 
-## Printing
+### Printing
 
-Like in the C-version, we must use a platform provided implementation of the print-functionality.
+Like in the C-version, we must use a platform provided implementation of the `print`-functionality.
 
-Several facilities for printing are provided by the course template. The simplest way to print is through the `print64` and `println64` macros exported in `print.rs`:
+Several facilities for printing are provided by the course template.
+The simplest way to print is through the `print64` and `println64` macros exported in `print.rs`:
 
-```rs
+```rust
 println64!("Hello World from Rust!");
 
 println64!("This is an integer: {}.", 42);
 ```
 
-The `print64` and `println64` macros print a maximum of 64 characters per call using Rust style format. Alternatively, you could call `xil::xil_printf` of the C-FFI to use the Xilinx version of the standard `printf` C-interface and C format strings:
+The `print64` and `println64` macros print a maximum of 64 characters per call using Rust style format. 
+Alternatively, you could call `xil::xil_printf` of the C-FFI to use the Xilinx version of the standard `printf` C-interface and C format strings:
 
-```rs
+```rust
 unsafe {
     xil::xil_printf("Hello World via xil_printf\0".as_ptr());
 
@@ -24,23 +26,42 @@ unsafe {
 
 As shown above, using this interface requires you to use raw pointers, unsafe and nul-terminated strings like so `"Hello World!\0"`, but it gets rid of the 64 byte limitation.
 
+### [Unsafe](https://doc.rust-lang.org/book/ch19-01-unsafe-rust.html)
 
-## Unsafe
-Unsafe blocks `unsafe {}` are used to wrap whatever code that the compiler cannot verify to not contain certain kinds of errors. Examples of code that needs to be wrapped in `unsafe {}` are:
-- reading from or writing to an arbitrary physical memory address or dereferencing a raw-pointer (`*ptr`),
-- calling a function in `C`, eg. almost anything in the `xil_sys` / `xil` crate.
+If the compiler can not verify a fragment of the code, you have to wrap it inside an `unsafe`-block.
 
-Runtime errors will mostly occur inside of `unsafe {}` blocks.
+You have to use unsafe code to:
 
-### Usage example
-```rs
+- dereference a raw pointer,
+- call an unsafe function or method,
+- access or modify a mutable static variable,
+- implement an unsafe trait, or
+- access fields of `union`s.
+
+For example reading from or writing to an arbitrary physical memory address is unsafe.
+
+```rust
+let value = unsafe { read_volatile(address) };
+```
+
+Also calling a C-function via foreign function interface is unsafe.
+
+```rust
 unsafe {
     xil::Xil_ExceptionEnable();
 }
 ```
 
+The programmer is responsible for verifying the code inside unsafe block.
+It might be the case that most runtime errors will occur inside of `unsafe {}`-blocks.
 
-## Xilinx functions
-NOTE: You will not need to work with Xilinx Cortex-A9 board support package (BSP) functions in this course work.
+### Xilinx functions
 
-The basic exercise template uses special functions from the Xilinx Cortex-A9 BSP. These functions are accessed from Rust using the `xil-custom-sys` crate, which contains the pre-built Xilinx driver package static library with soft-floats (`libxil_sf.a`). The `main.rs` of the template renames the library as `xil`, thus the Xilinx BSP functions are accessed as `xil::*`.
+---
+You do not have to use Xilinx's board support functions in this course work.
+
+---
+
+The basic exercise template uses special functions from the Xilinx Cortex-A9 BSP.
+These functions are accessed from Rust using the `xil-custom-sys` crate, which contains the pre-built Xilinx driver package static library with soft-floats (`libxil_sf.a`).
+The `main.rs` of the template renames the library as `xil`, thus the Xilinx BSP functions are accessed as `xil::*`.

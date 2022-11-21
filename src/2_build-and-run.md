@@ -1,86 +1,102 @@
 # Building and running the application on-device
 
-To get started, you'll need to download the repository onto your computer. You could do this by opening a terminal (e.g. Git Bash) and typing the following:
+Clone the code to your local computer using terminal.
 
-`git clone https://github.com/hegza/alien-shooter-template-rs`
+`git clone git@github.com:RHamalainen/alien-shooter-template-rs.git`
 
-This will download the project directory "alien-shooter-template-rs" onto your computer.
+This downloads the project directory `alien-shooter-template-rs` to your computer.
 
-The downloaded Rust project comprises board configuration files, Rust source code and Rust build configurations. They are arranged in the following manner:
+The downloaded Rust project comprises board configuration files, source code and build configurations.
 
-| Path          | Description | Notes |
-|---------------|-------------|-------|
-| src/          | The Rust source code | This is what you will need to edit in the next phase |
-| pynq/         | PYNQ-Z1 board configuration files | You will **not** need to make changes to these |
-| Cargo.toml    | Rust library dependencies and package configuration | |
-| .cargo/config | Rust build configurations | Especially: linker configurations |
+|Path|Description|Notes|
+|---|---|---|
+|`src/`|Rust source code|You have to edit these|
+|`pynq/`|PYNQ-Z1 board configuration files||
+|`Cargo.toml`|Rust library dependencies and package configuration||
+|`.cargo/config`|Rust build (compile and link) configurations||
 
-Building and running a Rust application is usually as simple as invoking the main toolchain build command. Unfortunately, we're cross-compiling from desktop to another device provided by a manufacturer with specific requirements. Because of this, we'll need to provide the location of the manufacturer's tools with the build command.
+Normally building and running a Rust application is usually as simple as invoking the main toolchain build command.
+Unfortunately, we're cross-compiling from desktop to another device provided by a manufacturer with specific requirements.
+Because of this, we have to provide the location of the manufacturer's tools with the build command.
 
 ## Build the application
 
-Before we start, switch to the project directory in your terminal (e.g. Git Bash):
+Switch to your project folder using terminal.
 
 `cd alien-shooter-template-rs`
 
-Then set the cross-compiler for this directory. We use Cortex-A9 v7 with "none" operating system and embedded application binary interface (EABI):
+Install correct cross-compiler for this project.
+PYNQ-Z1 contains dual-core ARM Cortex-A9, so the instruction set used is `armv7a`.
+We also do not use an operating system.
+We also use embedded application binary interface (EABI).
+Thus the correct command is following.
 
 `rustup target add armv7a-none-eabi`
 
-We're going to need to provide the location of the manufacturer's tools as an environment variable. Setting the environment variable is different on different types of terminals. **OBS:** Note that using Windows command prompt is not recommended. Here's The synopsis:
+We're going to need to provide the location of the manufacturer's tools as an environment variable. 
+Scripts for doing this are provided.
 
-| Terminal | Command |
-|-|-|
-| Git Bash, WSL, native Linux | `export XILINX_SDK="/path/to/Xilinx/SDK/version"`  |
-| PowerShell | `$Env:XILINX_SDK = "/path/to/Xilinx/SDK/version"`
-| Windows command prompt | `setx XILINX_SDK "/path/to/Xilinx/SDK/version"` |
+Setting the environment variable is different on different types of terminals.
 
-When the environment variable is set, we should be able to use:
+---
+Using Windows command prompt is not recommended.
 
-`cargo build`, to produce an executable file that we can run on the PYNQ-Z1.
+---
 
-For instance, at TC219 using on Git Bash and Vivado 2017.2:
-1. `export XILINX_SDK="C:/Apps/Xilinx_Vivado2017/SDK/2017.2"`
-2. `cargo build`
+|Terminal|Command|
+|---|---|
+|Git Bash, WSL, native Linux|`source ./scripts/tc219.env`|
+|PowerShell|`. ./scripts/tc219.ps1`
 
-or just `XILINX_SDK="C:/Apps/Xilinx_Vivado2017/SDK/2017.2" cargo build`.
-
-## Open an input-output interface to the board
-
-Just building the application is not enough. We also need to put the binary executable on the device and start executing. Before that, we'll want to open an interface to the board to be able to see what we are printing. In this exercise, we're going to open an UART over USB connection to the board. First, we'll need to figure out which COM port the device maps itself to:
-
-- Open the Windows Device Manager, and visually monitor the "Ports (COM & LPT)" section. Connect the board to the computer using the supplied micro-USB cable (sa. main exercise guide), then **turn on the device**, and then take note of which serial line the device gets connected to in the device manager, eg. USB Serial Port (COM5). In this case, the serial line would be "COM5".
-- Open PuTTY, and select the following settings:
-    * connection type: serial,
-    * serial line: COM5 (yours maybe different, see device manager),
-    * speed: 115200.
-- You may optionally save the configuration by typing a name into the "Saved Sessions" field and pressing 'Save'. Finally, press "Open".
-- A successful connection will result in an idle PuTTY window.
-
-## Running our code on device
-
-We'll need to use Xilinx' own tools to install the binary executable onto the device. We'll use their command line interface called `xsct`. On Windows, you can find it in the Start Menu by typing "Xilinx Software Command Line Tool". Running that will open a blank command prompt.
-
-With the command prompt open, you'll need to navigate to the project directory. You can use `cd name_of_directory` to switch directories, and `dir` to list the contents to find the next directory to switch to. You can use e.g. `cd P:/` to switch drives.
-
-With luck, you might be able to just type: `cd P:/`, and `cd alien-shooter-template-rs`.
-
-## Upload the application onto the processor
-
-Once we have located the project in the `xsct` command prompt, we'll need to upload our executable onto the device. The project provides an automation script in the Xilinx preferred Tickle-script format. The script can be run with:
-
-`source run_on_pynq.tcl`
-
-The program should now print something on a connected PuTTY terminal.
-
-Feel free to look inside "run_on_pynq.tcl" to see what `xsct` is doing (reset, program FPGA, upload, ...).
-
-# Summary
-
-Once you make edits to the program source code in "src/", you will need to rebuild the project using e.g. Git Bash:
+After the environment variables are set, we can execute `build`-command.
 
 `cargo build`
 
-Then you will need to upload the built program executable into the device using Xilinx Software Command Line Tool:
+This attempts to produce an executable file that we can run on PYNQ-Z1 ARM processors.
+
+## Open an input-output interface to the board
+
+To run the executable on the board, we have to program it to it.
+Before running the application, we will want to open an interface to the board that can display what the board is saying for us.
+In this exercise, we're going to open an `UART` over `USB` connection to the board.
+
+First, we'll need to figure out which COM port the device maps itself to.
+
+1. Solve which `COM`-port the PYNQ-Z1 is connected to.
+    1. Open `Windows Device Manager`.
+    2. Check what ports are listed under `Ports (COM & LPT)`.
+    3. Turn on PYNQ-Z1.
+    4. Check what `COM`-port appeared.
+        - This port can vary.
+        - It might be e.g. `COM5` or `COM6`.
+2. Open `PuTTY`.
+    1. Select the following settings.
+        * `connection type: serial`
+        * `serial line: COM ???`
+            - Check step 1.
+        * `speed: 115200`
+    2. (Optional) You can save the configuration by typing a name into the `Saved Sessions`-field and pressing `Save`.
+    3. Press `Open`.
+3. Successful connection results in an empty PuTTY window.
+
+## Program executable to device
+
+We use Xilinx's tool `xsct` to program the executable to the device.
+You can find this program e.g. by typing `Xilinx Software Command Line Tool` to Windows Start Menu.
+
+1. Start `xsct`.
+2. Navigate to project folder using `cd` (and `dir`).
+3. Run Xilinx's provided `Tickle`-script.
+    - `source run_on_pynq.tcl`
+
+If everything went fine, the executable should print text to the PuTTY-terminal.
+
+## Summary
+
+After making changes to the source code, build the program.
+
+`cargo build`
+
+Run the executable on the device (using `xsct`-tool).
 
 `source run_on_pynq.tcl`

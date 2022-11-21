@@ -1,4 +1,4 @@
-## Leds-array
+## LED-array
 
 Indexing the leds-array works a little different between C and Rust.
 
@@ -8,11 +8,13 @@ The C-version of the course project declares a global volatile three-dimensional
 
 `volatile uint8_t dots[8][8][3] = {0};`
 
-Volatile means that the values of the table are prone to change by something other than the code that is currently executing close by. An instance of such a situation would be when two different interrupt handlers are simultaneously reading from and writing into the array.
+Volatile means that the values of the table are prone to change by something other than the code that is currently executing close by.
+An instance of such a situation would be when two different interrupt handlers are simultaneously reading from and writing into the array.
 
 ### Rust
 
-In Rust, you can omit `volatile` since Rust handles that functionality on access of a binding, not at declaration of the variable like in C. A similar three-dimensional array would be declared like so:
+In Rust, you can omit `volatile` since Rust handles that functionality on access of a binding, not at declaration of the variable like in C.
+A similar three-dimensional array would be declared like so:
 
 `static mut dots: [[[u8; 3]; 8]; 8] = [[[0; 3]; 8]; 8];`
 

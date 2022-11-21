@@ -1,8 +1,24 @@
 ## Special integer types
 
-`usize`, `isize` vs. `u32`, `i32`
+Integer type `u32` is always 32-bit unsigned integer and `i64` is always 64-bit signed integer.
+Special integer types `usize` and `isize` vary on size between platforms.
+The size of `usize` is how many bytes it takes to reference any memory address.
+For example in PYNQ-Z1 this requires 32-bit integer since it's memory address width is 32 bits.
+On your own computer it might be 64 bits.
+Special type `isize` is used as signed difference between two addresses.
 
-Rust makes a big deal about treating pointer-size related types different from ordinary integers. Rust uses `usize` for the unsigned pointer-width address value, and `isize` for the signed difference between two addresses. In our case on PYNQ-Z1 this is a 32-bit integer, but on your desktop computer it's probably a 64-bit integer. The most important thing to note about Rust's behavior around these types is that the pointer-width unsigned integer "`usize`" is required whenever we need to address an array (e.g. `DOTS[x][y][color] = value;`).
+Rust requires you to use `usize` for accessing an array.
 
-In practice, if you happen to have the wrong type, you can explicitly cast integers into these pointer-width types using the binary `as` operator: `DOTS[x][y][color as usize] = value;`. As usual, follow the instructions of the compiler.
+```rust
+let my_array: [u8; 3] = [5, 6, 7];
+let my_value = my_array[2];
+```
 
+In above example, the type of value `2` is `usize`.
+
+You can explicitely cast an integer to pointer-width type using `as`-operator.
+
+```rust
+let my_index: u32 = 2;
+let my_value = my_array[my_index as usize];
+```

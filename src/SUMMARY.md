@@ -12,6 +12,7 @@
 4. [Environment Setup](./4_setup-environment/0_setup-environment.md)
     - [Setup Rust & LLVM](./4_setup-environment/1_rust.md)
     - [Xilinx Tools](./4_setup-environment/2_install-xilinx.md)
+5. [Debugging](./5_debugging.md)
 
 [Links to resources](./links.md)
 

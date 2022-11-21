@@ -1,62 +1,63 @@
 ## Register access
 
-Register access in Rust is more complicated than in C. 
-Please refer to the Rust book for the following relevant concepts that will not be explained here: [variable bindings](https://doc.rust-lang.org/rust-by-example/variable_bindings.html), [mutability](https://doc.rust-lang.org/rust-by-example/variable_bindings/mut.html), [constants](https://doc.rust-lang.org/rust-by-example/custom_types/constants.html?highlight=const#constants), [for-loops](https://doc.rust-lang.org/std/keyword.for.html).
+Register access in Rust is more complicated than in C.
+Check `rust-by-example` on following topics:
 
-### C
+- [variable bindings](https://doc.rust-lang.org/rust-by-example/variable_bindings.html)
+- [control flow](https://doc.rust-lang.org/rust-by-example/flow_control.html)
+- [functions](https://doc.rust-lang.org/rust-by-example/fn.html)
 
-In C, you might declare a macro with an 8-character hexadecimal, representing a 32-bit memory address, that is then cast into a 32-bit pointer to an 8-bit value, like so:
+### Register access with C
+
+How to set a byte's bit high using C?
+Declare a macro for known 32-bit memory address that casts the value to 32-bit pointer to an 8-bit value.
 
 ```c
 #define ADDRESS (uint8_t*) 0x42010002
 ```
 
-Then you'd perhaps define a particular combination of bits to help setting a particular bit in the 8-bit register value:
+We can then declare a macro for a particular combination of bits to help manipulating the register value correctly.
 
 ```c
 #define A_BIT 0b00000001
 ```
 
-And finally, you might set the value in the register by first looking up the pointer with `*`, and then using a bitwise OR to set the particular bit:
+Now we can store a new value to the memory address by using dereference-operator `*` and using a bitwise `OR` to set the particular bit.
 
 ```c
 *ADDRESS |= A_BIT;
 ```
 
-### Rust
+### Register access with Rust
 
-In Rust, you'd first declare the 32-bit address to an 8-bit value and the bit combination as constant globals like so:
+Let's do the same task as above but using Rust.
+First we declare an 8-bit pointer to a 32-bit address as constant globals.
 
-```rs
-const ADDRESS: *mut u8 = 0x42010002 as *mut u8;
-const A_BIT: u8 = 0b00000001;
+```rust
+const ADDRESS: *mut u8 = 0x4201_0002 as *mut u8;
+const A_BIT: u8 = 0b0000_0001;
 ```
 
-Now's the complicated part.
-Rust doesn't allow direct register access, and the compiler is more aggressive at optimizing.
-That's why we must use a set of methods designed for register access, called `core::ptr::read_volatile` and `core::ptr::write_volatile`.
+Rust does not allow direct register access and the compiler is aggressive at optimizing the executable.
+Thus we use following special functions for reading from and writing to memory addresses.
 
-First, we must retrieve the 32-bit pointer to the 8-bit value into a **mutable binding**:
+- [`core::ptr::read_volatile`](https://doc.rust-lang.org/core/ptr/fn.read_volatile.html)
+- [`core::ptr::write_volatile`](https://doc.rust-lang.org/core/ptr/fn.write_volatile.html)
 
-```rs
-let value: *mut u8 = core::ptr::read_volatile( ADDRESS );
-```
+```rust
+// Read value from a memory address.
+let mut value: u8 = core::ptr::read_volatile(ADDRESS);
 
-Then we must flip the bit, and write back into the register at the end of the 32-bit pointer:
-
-```rs
+// Modify the value.
 value |= A_BIT;
 
-// Write `value` back to main memory at `ADDRESS`
-core::ptr::write_volatile( ADDRESS, value );
+// Write value back to the memory address.
+core::ptr::write_volatile(ADDRESS, value);
 ```
 
-For your convenience, we have also provided a method called `mutate_ptr` to help do all of the above in one go:
+For your convenience, we provide a method called `mutate_ptr` to help you to do all of the above in one call.
 
-```rs
-const ADDRESS: *mut u8 = 0x42010002 as *mut u8;
-const A_BIT: u8 = 0b00000001;
-
+```rust
 fn some_function() {
     mutate_ptr(ADDRESS, |val| val |= A_BIT);
 }
